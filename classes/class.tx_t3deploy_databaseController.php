@@ -250,14 +250,19 @@ class tx_t3deploy_databaseController {
 	 */
 	protected function getDefinedFieldDefinitions() {
 		$content = '';
+		$cacheTables = '';
+
+		if (class_exists('t3lib_cache') && method_exists(t3lib_cache, 'getDatabaseTableDefinitions')) {
+			$cacheTables = t3lib_cache::getDatabaseTableDefinitions();
+		}
 
 		if (method_exists($this->install, 'getFieldDefinitions_fileContent')) {
 			$content = $this->install->getFieldDefinitions_fileContent (
-				implode(chr(10), $this->getAllRawStructureDefinitions())
+				implode(chr(10), $this->getAllRawStructureDefinitions()) . $cacheTables
 			);
 		} else {
 			$content = $this->install->getFieldDefinitions_sqlContent (
-				implode(chr(10), $this->getAllRawStructureDefinitions())
+				implode(chr(10), $this->getAllRawStructureDefinitions()) . $cacheTables
 			);
 		}
 
