@@ -28,7 +28,7 @@ class tx_t3deploy_databaseController {
 	const RemoveTypes_list = 'drop,drop_table,clear_table';
 
 	/**
-	 * @var t3lib_install
+	 * @var t3lib_install|t3lib_install_Sql
 	 */
 	protected $install;
 
@@ -46,7 +46,13 @@ class tx_t3deploy_databaseController {
 	 * Creates this object.
 	 */
 	public function __construct() {
-		$this->install = t3lib_div::makeInstance('t3lib_install');
+
+		if ( t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
+			$this->install = t3lib_div::makeInstance('t3lib_install');
+		} else {
+			$this->install = t3lib_div::makeInstance('t3lib_install_Sql');
+		}
+
 		$this->setLoadedExtensions($GLOBALS['TYPO3_LOADED_EXT']);
 		$this->setConsideredTypes($this->getUpdateTypes());
 	}
@@ -125,7 +131,11 @@ class tx_t3deploy_databaseController {
 
 		if ($isRemovalEnabled) {
 				// Disable the delete prefix, thus tables and fields can be removed directly:
-			$this->install->deletedPrefixKey = '';
+			if ( t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
+				$this->install->deletedPrefixKey = '';
+			} else {
+				$this->install->setDeletedPrefixKey('');
+			}
 				// Add types considered for removal:
 			$this->addConsideredTypes($this->getRemoveTypes());
 				// Merge update suggestions:
