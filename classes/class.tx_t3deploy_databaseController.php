@@ -47,7 +47,7 @@ class tx_t3deploy_databaseController {
 	 */
 	public function __construct() {
 
-		if ( t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
+		if ( method_exists('t3lib_div', 'int_from_ver') && t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
 			$this->install = t3lib_div::makeInstance('t3lib_install');
 		} else {
 			$this->install = t3lib_div::makeInstance('t3lib_install_Sql');
@@ -131,7 +131,7 @@ class tx_t3deploy_databaseController {
 
 		if ($isRemovalEnabled) {
 				// Disable the delete prefix, thus tables and fields can be removed directly:
-			if ( t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
+			if ( method_exists('t3lib_div', 'int_from_ver') && t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
 				$this->install->deletedPrefixKey = '';
 			} else {
 				$this->install->setDeletedPrefixKey('');
