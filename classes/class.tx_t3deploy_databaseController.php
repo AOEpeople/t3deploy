@@ -8,8 +8,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-t3lib_div::requireOnce(PATH_t3lib . 'class.t3lib_install.php');
-
 /**
  * Controller that handles database actions of the t3deploy process inside TYPO3.
  *

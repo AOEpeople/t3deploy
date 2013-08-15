@@ -8,8 +8,6 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once PATH_t3lib . 'class.t3lib_cli.php';
-
 /**
  * General CLI dispatcher for the t3deploy extension.
  *
