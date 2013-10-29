@@ -31,7 +31,7 @@ class tx_t3deploy_databaseController {
 	protected $install;
 
 	/**
-	 * @var array
+	 * @var \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray
 	 */
 	protected $loadedExtensions;
 
@@ -58,10 +58,10 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Sets information concerning all loaded TYPO3 extensions.
 	 *
-	 * @param array $loadedExtensions
+	 * @param \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray $loadedExtensions
 	 * @return void
 	 */
-	public function setLoadedExtensions(array $loadedExtensions) {
+	public function setLoadedExtensions(\TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray $loadedExtensions) {
 		$this->loadedExtensions = $loadedExtensions;
 	}
 
@@ -98,12 +98,11 @@ class tx_t3deploy_databaseController {
 	public function updateStructureAction(array $arguments) {
 		$isExcuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
-		$allowKeyModifications = (isset($arguments['--allowKeyModifications']) || isset($arguments['-k']));
 
-		$result = $this->executeUpdateStructure($arguments, $allowKeyModifications);
+		$result = $this->executeUpdateStructure($arguments);
 
 		if ($isExcuteEnabled) {
-			$result.= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled, $allowKeyModifications);
+			$result.= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled);
 		}
 
 		return $result;
@@ -207,8 +206,7 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Gets the differences in the database structure by comparing
 	 * the current structure with the SQL definitions of all extensions
-	 * and the TYPO3 core in t3lib/stddb/tables.sql (or typo3/sysext/core/ext_tables.sql,
-	 * see http://forge.typo3.org/issues/45187).
+	 * and the TYPO3 core in t3lib/stddb/tables.sql.
 	 *
 	 * This method searches for fields/tables to be added/updated.
 	 *
@@ -232,8 +230,7 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Gets the differences in the database structure by comparing
 	 * the current structure with the SQL definitions of all extensions
-	 * and the TYPO3 core in t3lib/stddb/tables.sql (or typo3/sysext/core/ext_tables.sql,
-	 * see http://forge.typo3.org/issues/45187).
+	 * and the TYPO3 core in t3lib/stddb/tables.sql.
 	 *
 	 * This method searches for fields/tables to be removed.
 	 *
@@ -286,15 +283,13 @@ class tx_t3deploy_databaseController {
 	 * @return array All structure definitions
 	 */
 	protected function getAllRawStructureDefinitions() {
-		$rawDefinitions = array();
-		if (file_exists(PATH_typo3 . 'sysext/core/ext_tables.sql')) $rawDefinitions[] = file_get_contents(PATH_typo3 . 'sysext/core/ext_tables.sql');
-		else $rawDefinitions[] = file_get_contents(PATH_t3lib . 'stddb/tables.sql');
+		/** @var \TYPO3\CMS\Install\Service\SqlSchemaMigrationService $schemaMigrationService */
+		$schemaMigrationService = t3lib_div::makeInstance('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
+		/** @var \TYPO3\CMS\Install\Service\SqlExpectedSchemaService $expectedSchemaService */
+		$expectedSchemaService = t3lib_div::makeInstance('TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService');
 
-		foreach ($this->loadedExtensions as $extension) {
-			if (is_array($extension) && $extension['ext_tables.sql'])	{
-				$rawDefinitions[] = file_get_contents($extension['ext_tables.sql']);
-			}
-		}
+		$expectedSchemaString = $expectedSchemaService->getTablesDefinitionString(TRUE);
+		$rawDefinitions = $schemaMigrationService->getStatementArray($expectedSchemaString, TRUE);
 
 		return $rawDefinitions;
 	}
