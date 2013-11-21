@@ -96,12 +96,12 @@ class tx_t3deploy_databaseController {
 	 * @return string
 	 */
 	public function updateStructureAction(array $arguments) {
-		$isExcuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
+		$isExecuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
 
 		$result = $this->executeUpdateStructure($arguments);
 
-		if ($isExcuteEnabled) {
+		if ($isExecuteEnabled) {
 			$result.= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled);
 		}
 
@@ -126,6 +126,8 @@ class tx_t3deploy_databaseController {
 		$changes = $this->install->getUpdateSuggestions(
 			$this->getStructureDifferencesForUpdate($database, $allowKeyModifications)
 		);
+
+		$this->checkChangesSyntax($changes);
 
 		if ($isRemovalEnabled) {
 				// Disable the delete prefix, thus tables and fields can be removed directly:
@@ -166,6 +168,20 @@ class tx_t3deploy_databaseController {
 		}
 
 		return $result;
+	}
+
+	/**
+	 * performs some basic checks on the database changes to identify most common errors
+	 *
+	 * @param string $changes the changes to check
+	 * @throws Exception if the file seems to contain bad data
+	 */
+	protected function checkChangesSyntax($changes) {
+		if (strlen($changes) < 10) return;
+		$checked = substr(ltrim($changes), 0, 10);
+		if ($checked != trim(strtoupper($checked))) {
+			throw new Exception('Changes for schema_up seem to contain weird data, it starts with this:'.PHP_EOL.substr($changes, 0, 200).PHP_EOL.'=================================='.PHP_EOL.'If the file is ok, please add your conditions to file res/extensions/t3deploy/classes/class.tx_t3deploy_databaseController.php in t3deploy.');
+		}
 	}
 
 	/**
