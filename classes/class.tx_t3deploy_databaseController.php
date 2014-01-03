@@ -100,11 +100,12 @@ class tx_t3deploy_databaseController {
 	public function updateStructureAction(array $arguments) {
 		$isExcuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
+		$allowKeyModifications = (isset($arguments['--allowKeyModifications']) || isset($arguments['-k']));
 
-		$result = $this->executeUpdateStructure($arguments);
+		$result = $this->executeUpdateStructure($arguments, $allowKeyModifications);
 
 		if ($isExcuteEnabled) {
-			$result.= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled);
+			$result.= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled, $allowKeyModifications);
 		}
 
 		return $result;
