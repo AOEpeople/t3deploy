@@ -209,7 +209,8 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Gets the differences in the database structure by comparing
 	 * the current structure with the SQL definitions of all extensions
-	 * and the TYPO3 core in t3lib/stddb/tables.sql.
+	 * and the TYPO3 core in t3lib/stddb/tables.sql (or typo3/sysext/core/ext_tables.sql,
+	 * see http://forge.typo3.org/issues/45187).
 	 *
 	 * This method searches for fields/tables to be added/updated.
 	 *
@@ -233,7 +234,8 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Gets the differences in the database structure by comparing
 	 * the current structure with the SQL definitions of all extensions
-	 * and the TYPO3 core in t3lib/stddb/tables.sql.
+	 * and the TYPO3 core in t3lib/stddb/tables.sql (or typo3/sysext/core/ext_tables.sql,
+	 * see http://forge.typo3.org/issues/45187).
 	 *
 	 * This method searches for fields/tables to be removed.
 	 *
@@ -287,7 +289,8 @@ class tx_t3deploy_databaseController {
 	 */
 	protected function getAllRawStructureDefinitions() {
 		$rawDefinitions = array();
-		$rawDefinitions[] = file_get_contents(PATH_t3lib . 'stddb/tables.sql');
+		if (file_exists(PATH_typo3 . 'sysext/core/ext_tables.sql')) $rawDefinitions[] = file_get_contents(PATH_typo3 . 'sysext/core/ext_tables.sql');
+		else $rawDefinitions[] = file_get_contents(PATH_t3lib . 'stddb/tables.sql');
 
 		foreach ($this->loadedExtensions as $extension) {
 			if (is_array($extension) && $extension['ext_tables.sql'])	{
