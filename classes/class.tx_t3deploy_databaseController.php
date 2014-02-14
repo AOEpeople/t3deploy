@@ -102,7 +102,7 @@ class tx_t3deploy_databaseController {
 		$result = $this->executeUpdateStructure($arguments);
 
 		if ($isExecuteEnabled) {
-			$result.= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled);
+			$result .= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled);
 		}
 
 		return $result;
@@ -127,8 +127,6 @@ class tx_t3deploy_databaseController {
 			$this->getStructureDifferencesForUpdate($database, $allowKeyModifications)
 		);
 
-		$this->checkChangesSyntax($changes);
-
 		if ($isRemovalEnabled) {
 				// Disable the delete prefix, thus tables and fields can be removed directly:
 			if ( method_exists('t3lib_div', 'int_from_ver') && t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
@@ -152,7 +150,7 @@ class tx_t3deploy_databaseController {
 			// Concatenates all statements:
 			foreach ($this->consideredTypes as $consideredType) {
 				if (isset($changes[$consideredType]) && is_array($changes[$consideredType])) {
-					$statements+= $changes[$consideredType];
+					$statements += $changes[$consideredType];
 				}
 			}
 
@@ -166,6 +164,8 @@ class tx_t3deploy_databaseController {
 				$result = implode(PHP_EOL, $statements);
 			}
 		}
+
+		$this->checkChangesSyntax($result);
 
 		return $result;
 	}
@@ -273,7 +273,6 @@ class tx_t3deploy_databaseController {
 	 * @return array The accordant definitions
 	 */
 	protected function getDefinedFieldDefinitions() {
-		$content = '';
 		$cacheTables = '';
 
 		if (class_exists('t3lib_cache') && method_exists(t3lib_cache, 'getDatabaseTableDefinitions')) {
