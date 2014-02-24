@@ -105,7 +105,23 @@ class tx_t3deploy_databaseController {
 			$result .= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled);
 		}
 
-		return $result;
+		if(isset($arguments['--dump-file'])) {
+			$dumpFileName = $arguments['--dump-file'][0];
+			if(!file_exists(dirname($dumpFileName))) {
+				throw new InvalidArgumentException(sprintf(
+					'directory %s does not exist or is not readable', dirname($dumpFileName)
+				));
+			}
+			if(file_exists($dumpFileName) && !is_writable($dumpFileName)) {
+				throw new InvalidArgumentException(sprintf(
+					'file %s is not writable', $dumpFileName
+				));
+			}
+			file_put_contents($dumpFileName, $result);
+			return 'Output written to ' . $dumpFileName;
+		} else {
+			return $result;
+		}
 	}
 
 	/**
