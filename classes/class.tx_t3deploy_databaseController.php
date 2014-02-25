@@ -376,6 +376,6 @@ class tx_t3deploy_databaseController {
 	 * @return bool
 	 */
 	protected function isDropKeyStatement($statement) {
-		return strpos($statement, ' DROP ') !== FALSE && strpos($statement, ' KEY ') !== FALSE;
+		return strpos($statement, ' DROP ') !== FALSE && strpos($statement, ' KEY') !== FALSE;
 	}
 }
