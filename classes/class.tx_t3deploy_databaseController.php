@@ -100,7 +100,7 @@ class tx_t3deploy_databaseController {
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
 		$isModifyKeysEnabled = isset($arguments['--drop-keys']);
 
-		$result = $this->executeUpdateStructure($arguments, $isModifyKeysEnabled);
+		$result = $this->executeUpdateStructureUntilNoMoreChanges($arguments, $isModifyKeysEnabled);
 
 		if(isset($arguments['--dump-file'])) {
 			$dumpFileName = $arguments['--dump-file'][0];
@@ -119,11 +119,44 @@ class tx_t3deploy_databaseController {
 		}
 
 		if ($isExecuteEnabled) {
-			$result .= ($result ? PHP_EOL : '') . $this->executeUpdateStructure($arguments, $isRemovalEnabled);
+			$result .= ($result ? PHP_EOL : '') . $this->executeUpdateStructureUntilNoMoreChanges($arguments, $isRemovalEnabled);
 		}
 
 		return $result;
 
+	}
+
+	/**
+	 * call executeUpdateStructure until there are no more changes.
+	 *
+	 * The install tool sometimes relies on the user hitting the "update" button multiple times. This method
+	 * encapsulates that behaviour.
+	 *
+	 * @see executeUpdateStructure()
+	 * @param array $arguments
+	 * @param bool $allowKeyModifications
+	 * @return string
+	 */
+	protected function executeUpdateStructureUntilNoMoreChanges(array $arguments, $allowKeyModifications = FALSE) {
+		$result = '';
+		$iteration = 1;
+		$loopResult = '';
+		do {
+			$previousLoopResult = $loopResult;
+			$loopResult = $this->executeUpdateStructure($arguments, $allowKeyModifications);
+			if($loopResult == $previousLoopResult) {
+				break;
+			}
+
+			$result .= sprintf("\n# Iteration %d\n%s", $iteration++, $loopResult);
+
+			if($iteration > 10) {
+				$result .= "\nGiving up after 10 iterations.";
+				break;
+			}
+		} while(!empty($loopResult));
+
+		return $result;
 	}
 
 	/**
