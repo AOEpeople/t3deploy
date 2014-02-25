@@ -172,6 +172,8 @@ class tx_t3deploy_databaseController {
 				}
 			}
 
+			$statements = $this->sortStatements($statements);
+
 			if ($isExcuteEnabled) {
 				foreach ($statements as $statement) {
 					$GLOBALS['TYPO3_DB']->admin_query($statement);
@@ -343,5 +345,37 @@ class tx_t3deploy_databaseController {
 	 */
 	protected function getRemoveTypes() {
 		return t3lib_div::trimExplode(',', self::RemoveTypes_list, TRUE);
+	}
+
+	/**
+	 * sorts the statements in an array
+	 *
+	 * @param array $statements
+	 * @return array
+	 */
+	protected function sortStatements($statements) {
+		$newStatements = array();
+		foreach($statements as $key=>$statement) {
+			if($this->isDropKeyStatement($statement)) {
+				$newStatements[$key] = $statement;
+			}
+		}
+		foreach($statements as $key=>$statement) {
+			// writing the statement again, does not change its position
+			// this saves a condition check
+			$newStatements[$key] = $statement;
+		}
+
+		return $newStatements;
+	}
+
+	/**
+	 * returns true if the given statement looks as if it drops a (primary) key
+	 *
+	 * @param $statement
+	 * @return bool
+	 */
+	protected function isDropKeyStatement($statement) {
+		return strpos($statement, ' DROP ') !== FALSE && strpos($statement, ' KEY ') !== FALSE;
 	}
 }
