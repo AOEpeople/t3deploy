@@ -98,8 +98,9 @@ class tx_t3deploy_databaseController {
 	public function updateStructureAction(array $arguments) {
 		$isExecuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
+		$isModifyKeysEnabled = isset($arguments['--drop-keys']);
 
-		$result = $this->executeUpdateStructure($arguments);
+		$result = $this->executeUpdateStructure($arguments, $isModifyKeysEnabled);
 
 		if(isset($arguments['--dump-file'])) {
 			$dumpFileName = $arguments['--dump-file'][0];
