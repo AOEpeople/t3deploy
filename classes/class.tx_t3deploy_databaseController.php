@@ -351,10 +351,12 @@ class tx_t3deploy_databaseController {
 	 * @return array All structure definitions
 	 */
 	protected function getAllRawStructureDefinitions() {
+		/** @var TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+		$objectManager = t3lib_div::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var \TYPO3\CMS\Install\Service\SqlSchemaMigrationService $schemaMigrationService */
-		$schemaMigrationService = t3lib_div::makeInstance('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
+		$schemaMigrationService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
 		/** @var \TYPO3\CMS\Install\Service\SqlExpectedSchemaService $expectedSchemaService */
-		$expectedSchemaService = t3lib_div::makeInstance('TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService');
+		$expectedSchemaService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService');
 
 		$expectedSchemaString = $expectedSchemaService->getTablesDefinitionString(TRUE);
 		$rawDefinitions = $schemaMigrationService->getStatementArray($expectedSchemaString, TRUE);
