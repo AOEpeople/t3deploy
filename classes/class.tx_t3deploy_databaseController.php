@@ -59,9 +59,16 @@ class tx_t3deploy_databaseController {
 	 * Sets information concerning all loaded TYPO3 extensions.
 	 *
 	 * @param \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray $loadedExtensions
+	 * @throws InvalidArgumentException
 	 * @return void
 	 */
-	public function setLoadedExtensions(\TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray $loadedExtensions) {
+	public function setLoadedExtensions($loadedExtensions) {
+		if(!is_array($loadedExtensions) && !$loadedExtensions instanceof \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray ) {
+			throw new \InvalidArgumentException(sprintf(
+				'$loadedExtensions needs to be an array or \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray. %s given.',
+				is_object($loadedExtensions) ? get_class($loadedExtensions) : gettype($loadedExtensions)
+			));
+		}
 		$this->loadedExtensions = $loadedExtensions;
 	}
 
