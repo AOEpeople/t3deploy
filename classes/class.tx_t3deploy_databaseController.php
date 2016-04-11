@@ -2,7 +2,6 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2009 AOE media GmbH <dev@aoemedia.de>
 *  (c) 2016 AOE GmbH <dev@aoe.com>
 *  All rights reserved
 *
@@ -74,7 +73,7 @@ class tx_t3deploy_databaseController {
 	}
 
 	/**
-	 * Sets the types condirered to be executed (updates and/or removal).
+	 * Sets the types considered to be executed (updates and/or removal).
 	 *
 	 * @param array $consideredTypes
 	 * @return void
@@ -100,7 +99,7 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Updates the database structure.
 	 *
-	 * @param array $arguments Optional arguemtns passed to this action
+	 * @param array $arguments Optional arguments passed to this action
 	 * @return string
 	 */
 	public function updateStructureAction(array $arguments) {
@@ -170,7 +169,7 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Executes the database structure updates.
 	 *
-	 * @param array $arguments Optional arguemtns passed to this action
+	 * @param array $arguments Optional arguments passed to this action
 	 * @param boolean $allowKeyModifications Whether to allow key modifications
 	 * @return string
 	 */
