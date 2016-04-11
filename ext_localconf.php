@@ -3,7 +3,7 @@ if (!defined('TYPO3_MODE')) {
 	die('Access denied.');
 }
 
-define('PATH_tx_t3deploy', t3lib_extMgm::extPath($_EXTKEY));
+define('PATH_tx_t3deploy', \TYPO3\CMS\Core\Utility\ExtensionManagementUtility::extPath($_EXTKEY));
 
 // Register CLI process:
 if (TYPO3_MODE == 'BE') {

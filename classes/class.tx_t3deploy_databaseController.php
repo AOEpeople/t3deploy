@@ -8,6 +8,9 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+use \TYPO3\CMS\Core\Cache\Cache;
+
 /**
  * Controller that handles database actions of the t3deploy process inside TYPO3.
  *
@@ -26,7 +29,7 @@ class tx_t3deploy_databaseController {
 	const RemoveTypes_list = 'drop,drop_table,clear_table';
 
 	/**
-	 * @var t3lib_install|t3lib_install_Sql
+	 * @var \TYPO3\CMS\Install\Service\SqlSchemaMigrationService
 	 */
 	protected $install;
 
@@ -45,11 +48,7 @@ class tx_t3deploy_databaseController {
 	 */
 	public function __construct() {
 
-		if ( method_exists('t3lib_div', 'int_from_ver') && t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
-			$this->install = t3lib_div::makeInstance('t3lib_install');
-		} else {
-			$this->install = t3lib_div::makeInstance('t3lib_install_Sql');
-		}
+		$this->install = GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
 
 		$this->setLoadedExtensions($GLOBALS['TYPO3_LOADED_EXT']);
 		$this->setConsideredTypes($this->getUpdateTypes());
@@ -58,7 +57,7 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Sets information concerning all loaded TYPO3 extensions.
 	 *
-	 * @param \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray $loadedExtensions
+	 * @param \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray|array $loadedExtensions
 	 * @throws InvalidArgumentException
 	 * @return void
 	 */
@@ -176,33 +175,30 @@ class tx_t3deploy_databaseController {
 	protected function executeUpdateStructure(array $arguments, $allowKeyModifications = FALSE) {
 		$result = '';
 
-		$isExcuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
+		$isExecuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
 		$isVerboseEnabled = (isset($arguments['--verbose']) || isset($arguments['-v']));
 		$database = (isset($arguments['--database']) && $arguments['--database'] ? $arguments['--database'] : TYPO3_db);
 
 		$changes = $this->install->getUpdateSuggestions(
-			$this->getStructureDifferencesForUpdate($database, $allowKeyModifications)
+			$this->getStructureDifferencesForUpdate($allowKeyModifications)
 		);
 
 		if ($isRemovalEnabled) {
 				// Disable the delete prefix, thus tables and fields can be removed directly:
-			if ( method_exists('t3lib_div', 'int_from_ver') && t3lib_div::int_from_ver(TYPO3_version) < 4007001) {
-				$this->install->deletedPrefixKey = '';
-			} else {
-				$this->install->setDeletedPrefixKey('');
-			}
+			$this->install->setDeletedPrefixKey('');
+
 				// Add types considered for removal:
 			$this->addConsideredTypes($this->getRemoveTypes());
 				// Merge update suggestions:
 			$removals = $this->install->getUpdateSuggestions(
-				$this->getStructureDifferencesForRemoval($database, $allowKeyModifications),
+				$this->getStructureDifferencesForRemoval($allowKeyModifications),
 				'remove'
 			);
 			$changes = array_merge($changes, $removals);
 		}
 
-		if ($isExcuteEnabled || $isVerboseEnabled) {
+		if ($isExecuteEnabled || $isVerboseEnabled) {
 			$statements = array();
 
 			// Concatenates all statements:
@@ -214,7 +210,7 @@ class tx_t3deploy_databaseController {
 
 			$statements = $this->sortStatements($statements);
 
-			if ($isExcuteEnabled) {
+			if ($isExecuteEnabled) {
 				foreach ($statements as $statement) {
 					$GLOBALS['TYPO3_DB']->admin_query($statement);
 				}
@@ -286,14 +282,13 @@ class tx_t3deploy_databaseController {
 	 *
 	 * This method searches for fields/tables to be added/updated.
 	 *
-	 * @param string $database
 	 * @param boolean $allowKeyModifications Whether to allow key modifications
 	 * @return array The database statements to update the structure
 	 */
-	protected function getStructureDifferencesForUpdate($database, $allowKeyModifications = FALSE) {
+	protected function getStructureDifferencesForUpdate($allowKeyModifications = FALSE) {
 		$differences = $this->install->getDatabaseExtra(
 			$this->getDefinedFieldDefinitions(),
-			$this->install->getFieldDefinitions_database($database)
+			$this->install->getFieldDefinitions_database()
 		);
 
 		if (!$allowKeyModifications) {
@@ -310,13 +305,12 @@ class tx_t3deploy_databaseController {
 	 *
 	 * This method searches for fields/tables to be removed.
 	 *
-	 * @param string $database
 	 * @param boolean $allowKeyModifications Whether to allow key modifications
 	 * @return array The database statements to update the structure
 	 */
-	protected function getStructureDifferencesForRemoval($database, $allowKeyModifications = FALSE) {
+	protected function getStructureDifferencesForRemoval($allowKeyModifications = FALSE) {
 		$differences = $this->install->getDatabaseExtra(
-			$this->install->getFieldDefinitions_database($database),
+			$this->install->getFieldDefinitions_database(),
 			$this->getDefinedFieldDefinitions()
 		);
 
@@ -333,21 +327,11 @@ class tx_t3deploy_databaseController {
 	 * @return array The accordant definitions
 	 */
 	protected function getDefinedFieldDefinitions() {
-		$cacheTables = '';
+		$cacheTables = Cache::getDatabaseTableDefinitions();
 
-		if (class_exists('t3lib_cache') && method_exists(t3lib_cache, 'getDatabaseTableDefinitions')) {
-			$cacheTables = t3lib_cache::getDatabaseTableDefinitions();
-		}
-
-		if (method_exists($this->install, 'getFieldDefinitions_fileContent')) {
-			$content = $this->install->getFieldDefinitions_fileContent (
-				implode(chr(10), $this->getAllRawStructureDefinitions()) . $cacheTables
-			);
-		} else {
-			$content = $this->install->getFieldDefinitions_sqlContent (
-				implode(chr(10), $this->getAllRawStructureDefinitions()) . $cacheTables
-			);
-		}
+		$content = $this->install->getFieldDefinitions_fileContent (
+			implode(chr(10), $this->getAllRawStructureDefinitions()) . $cacheTables
+		);
 
 		return $content;
 	}
@@ -359,7 +343,7 @@ class tx_t3deploy_databaseController {
 	 */
 	protected function getAllRawStructureDefinitions() {
 		/** @var TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-		$objectManager = t3lib_div::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 		/** @var \TYPO3\CMS\Install\Service\SqlSchemaMigrationService $schemaMigrationService */
 		$schemaMigrationService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
 		/** @var \TYPO3\CMS\Install\Service\SqlExpectedSchemaService $expectedSchemaService */
@@ -377,7 +361,7 @@ class tx_t3deploy_databaseController {
 	 * @return array
 	 */
 	protected function getUpdateTypes() {
-		return t3lib_div::trimExplode(',', self::UpdateTypes_List, TRUE);
+		return GeneralUtility::trimExplode(',', self::UpdateTypes_List, TRUE);
 	}
 
 	/**
@@ -386,7 +370,7 @@ class tx_t3deploy_databaseController {
 	 * @return array
 	 */
 	protected function getRemoveTypes() {
-		return t3lib_div::trimExplode(',', self::RemoveTypes_list, TRUE);
+		return GeneralUtility::trimExplode(',', self::RemoveTypes_list, TRUE);
 	}
 
 	/**

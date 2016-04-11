@@ -8,13 +8,15 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
+use \TYPO3\CMS\Core\Utility\GeneralUtility;
+
 /**
  * General CLI dispatcher for the t3deploy extension.
  *
  * @package t3deploy
  * @author Oliver Hader <oliver.hader@aoemedia.de>
  */
-class tx_t3deploy_dispatch extends t3lib_cli {
+class tx_t3deploy_dispatch extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	const ExtKey = 't3deploy';
 	const Mask_ClassName = 'tx_t3deploy_%sController';
 	const Mask_ClassFile = 'classes/class.tx_t3deploy_%sController.php';
@@ -35,7 +37,7 @@ class tx_t3deploy_dispatch extends t3lib_cli {
 			'synopsis' => self::ExtKey . ' controller action ###OPTIONS###',
 			'description' => '',
 			'examples' => 'typo3/cli_dispatch.phpsh ' . self::ExtKey . ' database updateStructure',
-			'author' => '(c) 2010 AOE media GmbH <dev@aoemedia.de>',
+			'author' => '(c) 2016 AOE GmbH <dev@aoe.com>',
 		));
 	}
 
@@ -57,7 +59,7 @@ class tx_t3deploy_dispatch extends t3lib_cli {
 	 */
 	public function getClassInstance($className) {
 		if (!isset($this->classInstances[$className])) {
-			$this->classInstances[$className] = t3lib_div::makeInstance($className);
+			$this->classInstances[$className] = GeneralUtility::makeInstance($className);
 		}
 		return $this->classInstances[$className];
 	}
@@ -76,7 +78,8 @@ class tx_t3deploy_dispatch extends t3lib_cli {
 	/**
 	 * Dispatches the requested actions to the accordant controller.
 	 *
-	 * @return void
+	 * @return mixed
+	 * @throws Exception
 	 */
 	public function dispatch() {
 		$controller = (string)$this->cli_args['_DEFAULT'][1];
@@ -91,7 +94,7 @@ class tx_t3deploy_dispatch extends t3lib_cli {
 		$actionName = sprintf(self::Mask_Action, $action);
 
 		if (!class_exists($className)) {
-			t3lib_div::requireOnce(PATH_tx_t3deploy . $classFile);
+			GeneralUtility::requireOnce(PATH_tx_t3deploy . $classFile);
 		}
 
 		$instance = $this->getClassInstance($className);
