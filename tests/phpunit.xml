@@ -1,0 +1,26 @@
+<phpunit
+        backupGlobals="true"
+        backupStaticAttributes="false"
+        colors="false"
+        convertErrorsToExceptions="true"
+        convertNoticesToExceptions="true"
+        convertWarningsToExceptions="true"
+        forceCoversAnnotation="false"
+        processIsolation="false"
+        stopOnError="false"
+        stopOnFailure="false"
+        stopOnIncomplete="false"
+        stopOnSkipped="false"
+        verbose="false"
+        >
+    <testsuites>
+        <testsuite name="t3deploy">
+            <directory suffix="_testcase.php">../tests/</directory>
+        </testsuite>
+    </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">../classes</directory>
+        </whitelist>
+    </filter>
+</phpunit>
