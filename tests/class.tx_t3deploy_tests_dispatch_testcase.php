@@ -68,7 +68,7 @@ class tx_t3deploy_tests_dispatch_testcase extends tx_phpunit_testcase {
 		);
 
 		$testMock = $this->getMock($this->testClassName, array('testAction'));
-		$testMock->expects($this->once())->method('testAction')->will($this->returnValue($this->testClassName));
+		$testMock->expects($this->once())->method('testAction')->willReturn($this->testClassName);
 
 		$this->dispatch->setCliArguments($cliArguments);
 		$this->dispatch->setClassInstance(
