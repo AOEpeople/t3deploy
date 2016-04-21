@@ -39,11 +39,6 @@ class tx_t3deploy_databaseController {
 	protected $expectedSchemaService;
 
 	/**
-	 * @var \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray
-	 */
-	protected $loadedExtensions;
-
-	/**
 	 * @var array
 	 */
 	protected $consideredTypes;
@@ -58,25 +53,7 @@ class tx_t3deploy_databaseController {
 		$this->schemaMigrationService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
 		$this->expectedSchemaService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService');
 
-		$this->setLoadedExtensions($GLOBALS['TYPO3_LOADED_EXT']);
 		$this->setConsideredTypes($this->getUpdateTypes());
-	}
-
-	/**
-	 * Sets information concerning all loaded TYPO3 extensions.
-	 *
-	 * @param \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray|array $loadedExtensions
-	 * @throws InvalidArgumentException
-	 * @return void
-	 */
-	public function setLoadedExtensions($loadedExtensions) {
-		if(!is_array($loadedExtensions) && !$loadedExtensions instanceof \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray ) {
-			throw new \InvalidArgumentException(sprintf(
-				'$loadedExtensions needs to be an array or \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray. %s given.',
-				is_object($loadedExtensions) ? get_class($loadedExtensions) : gettype($loadedExtensions)
-			));
-		}
-		$this->loadedExtensions = $loadedExtensions;
 	}
 
 	/**
