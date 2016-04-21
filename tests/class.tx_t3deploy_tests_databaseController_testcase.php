@@ -23,16 +23,6 @@ class tx_t3deploy_tests_databaseController_testcase extends tx_phpunit_database_
 	private $controller;
 
 	/**
-	 * @var array
-	 */
-	private $testLoadedExtensions;
-
-	/**
-	 * @var string
-	 */
-	private $testExtensionsName;
-
-	/**
 	 * Sets up the test cases.
 	 *
 	 * @return void
@@ -43,15 +33,17 @@ class tx_t3deploy_tests_databaseController_testcase extends tx_phpunit_database_
 		$this->importStdDB();
 		$this->importExtensions(array('testextension'));
 
-		$this->testExtensionsName = uniqid('testextension');
-		$this->testLoadedExtensions = array(
-			$this->testExtensionsName = array(
-				'type' => 'L',
-				'ext_tables.sql' => PATH_tx_t3deploy . 'tests/fixtures/testextension/ext_tables.sql',
-			),
+		$expectedSchemaServiceMock = $this->getMock(
+			'TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService',
+			array('getTablesDefinitionString')
+		);
+
+		$expectedSchemaServiceMock->expects($this->any())->method('getTablesDefinitionString')->with(true)->willReturn(
+			file_get_contents(PATH_tx_t3deploy . 'tests/fixtures/testextension/ext_tables_fixture.sql')
 		);
 
 		$this->controller = new tx_t3deploy_databaseController();
+		$this->inject($this->controller, 'expectedSchemaService', $expectedSchemaServiceMock);
 	}
 
 	/**
@@ -78,18 +70,6 @@ class tx_t3deploy_tests_databaseController_testcase extends tx_phpunit_database_
 			'--verbose' => '',
 		);
 
-		$expectedSchemaServiceMock = $this->getMock(
-			'TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService',
-			array('getTablesDefinitionString')
-		);
-
-		$expectedSchemaServiceMock->expects($this->any())->method('getTablesDefinitionString')->with(true)->willReturn(
-			file_get_contents(PATH_tx_t3deploy . 'tests/fixtures/testextension/ext_tables_fixture.sql')
-		);
-
-		$this->inject($this->controller, 'expectedSchemaService', $expectedSchemaServiceMock);
-
-		$this->controller->setLoadedExtensions($this->testLoadedExtensions);
 		$result = $this->controller->updateStructureAction($arguments);
 
 		// Assert that nothing has been created, this is just for reporting:
@@ -116,18 +96,6 @@ class tx_t3deploy_tests_databaseController_testcase extends tx_phpunit_database_
 			'--verbose' => '',
 		);
 
-		$expectedSchemaServiceMock = $this->getMock(
-			'TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService',
-			array('getTablesDefinitionString')
-		);
-
-		$expectedSchemaServiceMock->expects($this->any())->method('getTablesDefinitionString')->with(true)->willReturn(
-			file_get_contents(PATH_tx_t3deploy . 'tests/fixtures/testextension/ext_tables_fixture.sql')
-		);
-
-		$this->inject($this->controller, 'expectedSchemaService', $expectedSchemaServiceMock);
-
-		$this->controller->setLoadedExtensions($this->testLoadedExtensions);
 		$result = $this->controller->updateStructureAction($arguments);
 
 		// Assert that tables have been created:
