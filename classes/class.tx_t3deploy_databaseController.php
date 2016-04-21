@@ -185,7 +185,6 @@ class tx_t3deploy_databaseController {
 		$isExecuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
 		$isVerboseEnabled = (isset($arguments['--verbose']) || isset($arguments['-v']));
-		$database = (isset($arguments['--database']) && $arguments['--database'] ? $arguments['--database'] : TYPO3_db);
 
 		$changes = $this->schemaMigrationService->getUpdateSuggestions(
 			$this->getStructureDifferencesForUpdate($allowKeyModifications)
