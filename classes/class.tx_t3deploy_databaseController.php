@@ -31,7 +31,12 @@ class tx_t3deploy_databaseController {
 	/**
 	 * @var \TYPO3\CMS\Install\Service\SqlSchemaMigrationService
 	 */
-	protected $install;
+	protected $schemaMigrationService;
+
+	/**
+	 * @var \TYPO3\CMS\Install\Service\SqlExpectedSchemaService
+	 */
+	protected $expectedSchemaService;
 
 	/**
 	 * @var \TYPO3\CMS\Core\Compatibility\LoadedExtensionsArray
@@ -47,8 +52,11 @@ class tx_t3deploy_databaseController {
 	 * Creates this object.
 	 */
 	public function __construct() {
+		/** @var TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
+		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
 
-		$this->install = GeneralUtility::makeInstance('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
+		$this->schemaMigrationService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
+		$this->expectedSchemaService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService');
 
 		$this->setLoadedExtensions($GLOBALS['TYPO3_LOADED_EXT']);
 		$this->setConsideredTypes($this->getUpdateTypes());
@@ -129,7 +137,6 @@ class tx_t3deploy_databaseController {
 		}
 
 		return $result;
-
 	}
 
 	/**
@@ -180,18 +187,18 @@ class tx_t3deploy_databaseController {
 		$isVerboseEnabled = (isset($arguments['--verbose']) || isset($arguments['-v']));
 		$database = (isset($arguments['--database']) && $arguments['--database'] ? $arguments['--database'] : TYPO3_db);
 
-		$changes = $this->install->getUpdateSuggestions(
+		$changes = $this->schemaMigrationService->getUpdateSuggestions(
 			$this->getStructureDifferencesForUpdate($allowKeyModifications)
 		);
 
 		if ($isRemovalEnabled) {
 				// Disable the delete prefix, thus tables and fields can be removed directly:
-			$this->install->setDeletedPrefixKey('');
+			$this->schemaMigrationService->setDeletedPrefixKey('');
 
 				// Add types considered for removal:
 			$this->addConsideredTypes($this->getRemoveTypes());
 				// Merge update suggestions:
-			$removals = $this->install->getUpdateSuggestions(
+			$removals = $this->schemaMigrationService->getUpdateSuggestions(
 				$this->getStructureDifferencesForRemoval($allowKeyModifications),
 				'remove'
 			);
@@ -286,9 +293,9 @@ class tx_t3deploy_databaseController {
 	 * @return array The database statements to update the structure
 	 */
 	protected function getStructureDifferencesForUpdate($allowKeyModifications = FALSE) {
-		$differences = $this->install->getDatabaseExtra(
+		$differences = $this->schemaMigrationService->getDatabaseExtra(
 			$this->getDefinedFieldDefinitions(),
-			$this->install->getFieldDefinitions_database()
+			$this->schemaMigrationService->getFieldDefinitions_database()
 		);
 
 		if (!$allowKeyModifications) {
@@ -309,8 +316,8 @@ class tx_t3deploy_databaseController {
 	 * @return array The database statements to update the structure
 	 */
 	protected function getStructureDifferencesForRemoval($allowKeyModifications = FALSE) {
-		$differences = $this->install->getDatabaseExtra(
-			$this->install->getFieldDefinitions_database(),
+		$differences = $this->schemaMigrationService->getDatabaseExtra(
+			$this->schemaMigrationService->getFieldDefinitions_database(),
 			$this->getDefinedFieldDefinitions()
 		);
 
@@ -328,11 +335,9 @@ class tx_t3deploy_databaseController {
 	 */
 	protected function getDefinedFieldDefinitions() {
 		$cacheTables = Cache::getDatabaseTableDefinitions();
-
-		$content = $this->install->getFieldDefinitions_fileContent (
+		$content = $this->schemaMigrationService->getFieldDefinitions_fileContent (
 			implode(chr(10), $this->getAllRawStructureDefinitions()) . $cacheTables
 		);
-
 		return $content;
 	}
 
@@ -342,15 +347,9 @@ class tx_t3deploy_databaseController {
 	 * @return array All structure definitions
 	 */
 	protected function getAllRawStructureDefinitions() {
-		/** @var TYPO3\CMS\Extbase\Object\ObjectManager $objectManager */
-		$objectManager = GeneralUtility::makeInstance('TYPO3\\CMS\\Extbase\\Object\\ObjectManager');
-		/** @var \TYPO3\CMS\Install\Service\SqlSchemaMigrationService $schemaMigrationService */
-		$schemaMigrationService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
-		/** @var \TYPO3\CMS\Install\Service\SqlExpectedSchemaService $expectedSchemaService */
-		$expectedSchemaService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService');
 
-		$expectedSchemaString = $expectedSchemaService->getTablesDefinitionString(TRUE);
-		$rawDefinitions = $schemaMigrationService->getStatementArray($expectedSchemaString, TRUE);
+		$expectedSchemaString = $this->expectedSchemaService->getTablesDefinitionString(TRUE);
+		$rawDefinitions = $this->schemaMigrationService->getStatementArray($expectedSchemaString, TRUE);
 
 		return $rawDefinitions;
 	}
