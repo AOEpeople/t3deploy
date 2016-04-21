@@ -226,7 +226,7 @@ class tx_t3deploy_databaseController {
 	/**
 	 * Removes key modifications that will cause errors.
 	 *
-	 * @param array $differences The differneces to be cleaned up
+	 * @param array $differences The differences to be cleaned up
 	 * @return array The cleaned differences
 	 */
 	protected function removeKeyModifications(array $differences) {
