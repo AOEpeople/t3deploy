@@ -4,23 +4,23 @@ TYPO3 dispatcher for database related operations.
 
 ## Usage
 
-### Add new database definitions
-
+**Add new database definitions**
+```
 php typo3/cli_dispatch.phpsh t3deploy database updateStructure --verbose --execute
-
-### Remove old database definitions
-
+```
+**Remove old database definitions**
+```
 php typo3/cli_dispatch.phpsh t3deploy database updateStructure --remove --verbose --execute
-
-### Only report new database definitions and removals
-
+```
+**Only report new database definitions and removals**
+```
 php typo3/cli_dispatch.phpsh t3deploy database updateStructure --remove --verbose
-
-### Only report new database definitions and removals to file
-
+```
+**Only report new database definitions and removals to file**
+```
 php typo3/cli_dispatch.phpsh t3deploy database updateStructure --remove --verbose --dump-file update_dump.sql
-
-### Options
+```
+**Options**
 * --verbose (-v): Report changes
 * --execute (-e): Execute changes (updates, removals)
 * --remove (-r): Include structure differences for removal
