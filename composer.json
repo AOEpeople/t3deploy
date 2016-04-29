@@ -1,0 +1,25 @@
+{
+    "name": "aoe/t3deploy-ext",
+    "description": "t3deploy TYPO3 dispatcher",
+    "type": "typo3-cms-extension",
+    "license": "GPL-3.0",
+    "config": {
+        "vendor-dir": "res/extension"
+    },
+    "authors": [
+        {
+            "name": "AOE GmbH",
+            "email": "dev@aoe.com"
+        }
+    ],
+    "require-dev": {
+        "typo3/cms": "~6.2"
+    },
+    "replace": {
+        "t3deploy": "*"
+    },
+    "keywords": [
+        "TYPO3",
+        "t3deploy"
+    ]
+}
