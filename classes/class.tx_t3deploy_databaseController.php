@@ -39,6 +39,11 @@ class tx_t3deploy_databaseController {
 	protected $expectedSchemaService;
 
 	/**
+	 * @var \TYPO3\CMS\Core\Category\CategoryRegistry
+	 */
+	protected $categoryRegistry;
+
+	/**
 	 * @var array
 	 */
 	protected $consideredTypes;
@@ -52,6 +57,7 @@ class tx_t3deploy_databaseController {
 
 		$this->schemaMigrationService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlSchemaMigrationService');
 		$this->expectedSchemaService = $objectManager->get('TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService');
+		$this->categoryRegistry = $objectManager->get('TYPO3\\CMS\\Core\\Category\\CategoryRegistry');
 
 		$this->setConsideredTypes($this->getUpdateTypes());
 	}
@@ -310,7 +316,7 @@ class tx_t3deploy_databaseController {
 	 * @return array The accordant definitions
 	 */
 	protected function getDefinedFieldDefinitions() {
-		$cacheTables = Cache::getDatabaseTableDefinitions();
+		$cacheTables = $this->categoryRegistry->getDatabaseTableDefinitions();
 		$content = $this->schemaMigrationService->getFieldDefinitions_fileContent (
 			implode(chr(10), $this->getAllRawStructureDefinitions()) . $cacheTables
 		);
