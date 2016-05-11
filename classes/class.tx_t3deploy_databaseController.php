@@ -9,7 +9,6 @@
 ***************************************************************/
 
 use \TYPO3\CMS\Core\Utility\GeneralUtility;
-use \TYPO3\CMS\Core\Cache\Cache;
 
 /**
  * Controller that handles database actions of the t3deploy process inside TYPO3.
