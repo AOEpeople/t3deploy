@@ -16,7 +16,7 @@ require_once PATH_tx_t3deploy . 'classes/class.tx_t3deploy_dispatch.php';
  * @package t3deploy
  * @author Oliver Hader <oliver.hader@aoe.com>
  */
-class tx_t3deploy_tests_dispatch_testcase extends tx_phpunit_testcase {
+class tx_t3deploy_tests_dispatch_testcase extends Tx_Phpunit_TestCase {
 	const ClassPrefix = 'tx_t3deploy_';
 	const ClassSuffix = 'Controller';
 

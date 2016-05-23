@@ -16,7 +16,7 @@ require_once PATH_tx_t3deploy . 'classes/class.tx_t3deploy_databaseController.ph
  * @package t3deploy
  * @author Oliver Hader <oliver.hader@aoe.com>
  */
-class tx_t3deploy_tests_databaseController_testcase extends tx_phpunit_database_testcase {
+class tx_t3deploy_tests_databaseController_testcase extends Tx_Phpunit_Database_TestCase {
 	/**
 	 * @var tx_t3deploy_databaseController
 	 */
