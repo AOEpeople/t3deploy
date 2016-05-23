@@ -32,12 +32,15 @@ class tx_t3deploy_dispatch extends \TYPO3\CMS\Core\Controller\CommandLineControl
 	 */
 	public function __construct() {
 		parent::__construct();
+
+		$this->setCliOptions();
+
 		$this->cli_help = array_merge($this->cli_help, array(
 			'name' => 'tx_t3deploy_dispatch',
 			'synopsis' => self::ExtKey . ' controller action ###OPTIONS###',
-			'description' => '',
+			'description' => 'TYPO3 dispatcher for database related operations.',
 			'examples' => 'typo3/cli_dispatch.phpsh ' . self::ExtKey . ' database updateStructure',
-			'author' => '(c) 2016 AOE GmbH <dev@aoe.com>',
+			'author' => '(c) 2012 - 2016 AOE GmbH <dev@aoe.com>',
 		));
 	}
 
@@ -86,7 +89,9 @@ class tx_t3deploy_dispatch extends \TYPO3\CMS\Core\Controller\CommandLineControl
 		$action = (string)$this->cli_args['_DEFAULT'][2];
 
 		if (!$controller || !$action) {
-			throw new Exception('The CLI process must be called with a controller and action name.');
+			$this->cli_validateArgs();
+			$this->cli_help();
+			exit(1);
 		}
 
 		$className = sprintf(self::Mask_ClassName, $controller);
@@ -109,5 +114,24 @@ class tx_t3deploy_dispatch extends \TYPO3\CMS\Core\Controller\CommandLineControl
 		);
 
 		return $result;
+	}
+
+	/**
+	 * Sets the CLI options for help.
+	 *
+	 * @return void
+	 */
+	protected function setCliOptions() {
+		$this->cli_options = array(
+			array('--verbose', 'Report changes'),
+			array('-v', 'Same as --verbose'),
+			array('--execute', 'Execute changes (updates, removals)'),
+			array('-e', 'Same as --execute'),
+			array('--remove', 'Include structure differences for removal'),
+			array('-r', 'Same as --remove'),
+			array('--drop-keys', 'Removes key modifications that will cause errors'),
+			array('--dump-file', 'Dump changes to file'),
+			array('--excludes', 'Exclude update types (add,change,create_table,change_table,drop,drop_table,clear_table)')
+		);
 	}
 }
