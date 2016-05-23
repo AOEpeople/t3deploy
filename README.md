@@ -20,12 +20,18 @@ php typo3/cli_dispatch.phpsh t3deploy database updateStructure --remove --verbos
 ```
 php typo3/cli_dispatch.phpsh t3deploy database updateStructure --remove --verbose --dump-file update_dump.sql
 ```
+**Exclude the types drop_table and clear_table from update database definitions**
+```
+php typo3/cli_dispatch.phpsh t3deploy database updateStructure --remove --verbose --excludes=drop_table,clear_table
+```
+
 **Options**
 * --verbose (-v): Report changes
 * --execute (-e): Execute changes (updates, removals)
 * --remove (-r): Include structure differences for removal
 * --drop-keys: Removes key modifications that will cause errors
 * --dump-file: Dump changes to file
+* --excludes: Exclude update types (add,change,create_table,change_table,drop,drop_table,clear_table)
 
 ## Requirements
 

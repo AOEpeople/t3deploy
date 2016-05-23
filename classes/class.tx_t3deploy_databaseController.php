@@ -86,6 +86,17 @@ class tx_t3deploy_databaseController {
 	}
 
 	/**
+	 * Removes defined types from considered types.
+	 *
+	 * @param array $removals
+	 * @return void
+	 * @see updateStructureAction()
+	 */
+	public function removeConsideredTypes(array $removals) {
+		$this->consideredTypes = array_diff($this->consideredTypes, $removals);
+	}
+
+	/**
 	 * Updates the database structure.
 	 *
 	 * @param array $arguments Optional arguments passed to this action
@@ -167,6 +178,7 @@ class tx_t3deploy_databaseController {
 		$isExecuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
 		$isVerboseEnabled = (isset($arguments['--verbose']) || isset($arguments['-v']));
+		$hasExcludes      = (isset($arguments['--excludes']) && is_array($arguments['--excludes']));
 
 		$changes = $this->schemaMigrationService->getUpdateSuggestions(
 			$this->getStructureDifferencesForUpdate($allowKeyModifications)
@@ -184,6 +196,11 @@ class tx_t3deploy_databaseController {
 				'remove'
 			);
 			$changes = array_merge($changes, $removals);
+		}
+
+		if ($hasExcludes) {
+			$excludes = explode(',', $arguments['--excludes'][0]);
+			$this->removeConsideredTypes($excludes);
 		}
 
 		if ($isExecuteEnabled || $isVerboseEnabled) {
