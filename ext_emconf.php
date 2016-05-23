@@ -3,7 +3,7 @@ global $EM_CONF,$_EXTKEY;
 
 $EM_CONF[$_EXTKEY] = array(
 	'title' => 't3deploy TYPO3 dispatcher',
-	'description' => '',
+	'description' => 'TYPO3 dispatcher for database related operations',
 	'category' => 'be',
 	'author' => 'AOE GmbH',
 	'author_email' => 'dev@aoe.com',
@@ -18,10 +18,10 @@ $EM_CONF[$_EXTKEY] = array(
 	'modify_tables' => '',
 	'lockType' => '',
 	'author_company' => '',
-	'version' => '1.0.0',
+	'version' => '1.1.0',
 	'constraints' => array(
 		'depends' => array(
-			'typo3'=>'6.2.0-',
+			'typo3'=>'6.2.0-7.6.99',
 		),
 		'conflicts' => array(
 		),
