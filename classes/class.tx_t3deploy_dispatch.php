@@ -14,7 +14,7 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
  * General CLI dispatcher for the t3deploy extension.
  *
  * @package t3deploy
- * @author Oliver Hader <oliver.hader@aoemedia.de>
+ * @author Oliver Hader <oliver.hader@aoe.com>
  */
 class tx_t3deploy_dispatch extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	const ExtKey = 't3deploy';

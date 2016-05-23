@@ -14,7 +14,7 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
  * Controller that handles database actions of the t3deploy process inside TYPO3.
  *
  * @package t3deploy
- * @author Oliver Hader <oliver.hader@aoemedia.de>
+ * @author Oliver Hader <oliver.hader@aoe.com>
  *
  */
 class tx_t3deploy_databaseController {
