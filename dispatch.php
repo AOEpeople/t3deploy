@@ -8,7 +8,7 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-if (!defined ('TYPO3_cliMode')) {
+if (!TYPO3_REQUESTTYPE == 6) {
 	die('Access denied: CLI only.');
 }
 
