@@ -3,9 +3,6 @@
     "description": "t3deploy TYPO3 dispatcher",
     "type": "typo3-cms-extension",
     "license": "GPL-3.0",
-    "config": {
-        "vendor-dir": "res/extension"
-    },
     "authors": [
         {
             "name": "AOE GmbH",
