@@ -10,7 +10,7 @@
         }
     ],
     "require-dev": {
-        "typo3/cms": "~6.2"
+        "typo3/cms": "~7.6"
     },
     "replace": {
         "t3deploy": "*"
