@@ -107,7 +107,7 @@ class tx_t3deploy_databaseController {
 		$isRemovalEnabled = (isset($arguments['--remove']) || isset($arguments['-r']));
 		$isModifyKeysEnabled = isset($arguments['--drop-keys']);
 
-		$result = $this->executeUpdateStructureUntilNoMoreChanges($arguments, $isModifyKeysEnabled);
+		$result = $this->executeUpdateStructureUntilNoMoreChanges($arguments, $isModifyKeysEnabled, FALSE);
 
 		if(isset($arguments['--dump-file'])) {
 			$dumpFileName = $arguments['--dump-file'][0];
@@ -143,13 +143,13 @@ class tx_t3deploy_databaseController {
 	 * @param bool $allowKeyModifications
 	 * @return string
 	 */
-	protected function executeUpdateStructureUntilNoMoreChanges(array $arguments, $allowKeyModifications = FALSE) {
+	protected function executeUpdateStructureUntilNoMoreChanges(array $arguments, $allowKeyModifications = FALSE, $allowExecution = TRUE) {
 		$result = '';
 		$iteration = 1;
 		$loopResult = '';
 		do {
 			$previousLoopResult = $loopResult;
-			$loopResult = $this->executeUpdateStructure($arguments, $allowKeyModifications);
+			$loopResult = $this->executeUpdateStructure($arguments, $allowKeyModifications, $allowExecution);
 			if($loopResult == $previousLoopResult) {
 				break;
 			}
@@ -172,7 +172,7 @@ class tx_t3deploy_databaseController {
 	 * @param boolean $allowKeyModifications Whether to allow key modifications
 	 * @return string
 	 */
-	protected function executeUpdateStructure(array $arguments, $allowKeyModifications = FALSE) {
+	protected function executeUpdateStructure(array $arguments, $allowKeyModifications = FALSE, $allowExecution = TRUE) {
 		$result = '';
 
 		$isExecuteEnabled = (isset($arguments['--execute']) || isset($arguments['-e']));
@@ -215,7 +215,7 @@ class tx_t3deploy_databaseController {
 
 			$statements = $this->sortStatements($statements);
 
-			if ($isExecuteEnabled) {
+			if ($allowExecution === true && $isExecuteEnabled) {
 				foreach ($statements as $statement) {
 					$GLOBALS['TYPO3_DB']->admin_query($statement);
 				}
