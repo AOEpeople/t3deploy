@@ -346,6 +346,10 @@ class tx_t3deploy_databaseController {
 	 */
 	protected function getAllRawStructureDefinitions() {
 
+        uasort($GLOBALS['TYPO3_LOADED_EXT'], function($a, $b) {
+            return $b['type'] <=> $a['type'];
+        });
+
 		$expectedSchemaString = $this->expectedSchemaService->getTablesDefinitionString(TRUE);
 		$rawDefinitions = $this->schemaMigrationService->getStatementArray($expectedSchemaString, TRUE);
 
