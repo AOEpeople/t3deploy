@@ -346,7 +346,7 @@ class tx_t3deploy_databaseController {
 	 */
 	protected function getAllRawStructureDefinitions() {
 
-        $packageStates = include_once(PATH_typo3conf .'/PackageStates.php');
+        $packageStates = include(PATH_typo3conf .'PackageStates.php');
 
         $tmp = $GLOBALS['TYPO3_LOADED_EXT'];
 
