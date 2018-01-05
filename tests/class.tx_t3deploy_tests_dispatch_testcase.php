@@ -8,15 +8,15 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once PATH_tx_t3deploy . 'classes/class.tx_t3deploy_dispatch.php';
+use TYPO3\CMS\Core\Tests\UnitTestCase;
 
 /**
- * Testcase for class tx_t3deploy_dispatch.
+ * Test case for class tx_t3deploy_dispatch.
  *
  * @package t3deploy
  * @author Oliver Hader <oliver.hader@aoe.com>
  */
-class tx_t3deploy_tests_dispatch_testcase extends Tx_Phpunit_TestCase
+class tx_t3deploy_tests_dispatch_testcase extends UnitTestCase
 {
     const ClassPrefix = 'tx_t3deploy_';
     const ClassSuffix = 'Controller';
@@ -24,12 +24,12 @@ class tx_t3deploy_tests_dispatch_testcase extends Tx_Phpunit_TestCase
     /**
      * @var string
      */
-    private $testClassName;
+    protected $testClassName;
 
     /**
      * @var tx_t3deploy_dispatch
      */
-    private $dispatch;
+    protected $dispatch;
 
     /**
      * Sets up the test cases.
@@ -54,6 +54,7 @@ class tx_t3deploy_tests_dispatch_testcase extends Tx_Phpunit_TestCase
     public function tearDown()
     {
         unset($this->dispatch);
+        parent::tearDown();
     }
 
     /**
