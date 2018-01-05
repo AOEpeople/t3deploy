@@ -22,7 +22,7 @@ class tx_t3deploy_tests_databaseController_testcase extends FunctionalTestCase
     /**
      * @var array
      */
-    protected $coreExtensionsToLoad = ['core'];
+    protected $coreExtensionsToLoad = ['core', 'extensionmanager'];
 
     /**
      * @var array
