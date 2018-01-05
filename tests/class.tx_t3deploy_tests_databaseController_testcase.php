@@ -8,16 +8,27 @@
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-require_once PATH_tx_t3deploy . 'classes/class.tx_t3deploy_databaseController.php';
+use TYPO3\CMS\Core\Tests\FunctionalTestCase;
+use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
- * Testcase for class tx_t3deploy_databaseController.
+ * Test case for class tx_t3deploy_databaseController.
  *
  * @package t3deploy
  * @author Oliver Hader <oliver.hader@aoe.com>
  */
-class tx_t3deploy_tests_databaseController_testcase extends Tx_Phpunit_Database_TestCase
+class tx_t3deploy_tests_databaseController_testcase extends FunctionalTestCase
 {
+    /**
+     * @var array
+     */
+    protected $coreExtensionsToLoad = ['core'];
+
+    /**
+     * @var array
+     */
+    protected $testExtensionsToLoad = ['typo3conf/ext/t3deploy', '../../tests/fixtures/testextension'];
+
     /**
      * @var tx_t3deploy_databaseController
      */
@@ -30,10 +41,7 @@ class tx_t3deploy_tests_databaseController_testcase extends Tx_Phpunit_Database_
      */
     public function setUp()
     {
-        $this->createDatabase();
-        $this->useTestDatabase();
-        $this->importStdDB();
-        $this->importExtensions(array('testextension'));
+        parent::setUp();
 
         $expectedSchemaServiceMock = $this->getMock(
             'TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService',
@@ -55,11 +63,11 @@ class tx_t3deploy_tests_databaseController_testcase extends Tx_Phpunit_Database_
      */
     public function tearDown()
     {
-        $this->dropDatabase();
-
         unset($this->testExtensionsName);
         unset($this->testLoadedExtensions);
         unset($this->controller);
+
+        GeneralUtility::flushDirectory($this->getInstancePath());
     }
 
     /**
@@ -216,36 +224,5 @@ class tx_t3deploy_tests_databaseController_testcase extends Tx_Phpunit_Database_
 
         // Assert that dump result is reported:
         $this->assertNotEmpty($result);
-    }
-
-    /**
-     * set $value into property $propertyName of $object
-     *
-     * This is a convenience method for setting a protected or private property in
-     * a test subject for the purpose of e.g. injecting a dependency.
-     *
-     * @param object $object The instance which needs the dependency
-     * @param string $propertyName Name of the property to be injected
-     * @param object $value The dependency to inject – usually an object but can also be any other type
-     * @return void
-     * @throws RuntimeException
-     * @throws InvalidArgumentException
-     */
-    private function inject($object, $propertyName, $value)
-    {
-        if (!is_object($object)) {
-            throw new InvalidArgumentException('Wrong type for argument $object, must be object.');
-        }
-
-        $objectReflection = new ReflectionObject($object);
-        if ($objectReflection->hasProperty($propertyName)) {
-            $property = $objectReflection->getProperty($propertyName);
-            $property->setAccessible(true);
-            $property->setValue($object, $value);
-        } else {
-            throw new \RuntimeException(
-                'Could not inject ' . $propertyName . ' into object of type ' . get_class($object)
-            );
-        }
     }
 }
