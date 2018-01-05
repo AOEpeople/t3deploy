@@ -11,7 +11,8 @@
         }
     ],
     "require-dev": {
-        "typo3/cms": "~7.6"
+        "typo3/cms": "^7.6",
+        "phpunit/phpunit": "^4.8"
     },
     "replace": {
         "t3deploy": "*"
@@ -19,6 +20,36 @@
     "autoload": {
         "classmap": [
             "classes"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TYPO3\\CMS\\Core\\Tests\\": ".Build/Web/typo3/sysext/core/Tests/"
+        }
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "preferred-install": {
+            "typo3/cms": "source"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "web-dir": ".Build/Web"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://composer.typo3.org/"
+        }
+    ],
+    "scripts": {
+        "post-autoload-dump": [
+            "mkdir -p .Build/Web/typo3conf/ext/",
+            "[ -L .Build/Web/typo3conf/ext/t3deploy ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/t3deploy"
         ]
     },
     "keywords": [
