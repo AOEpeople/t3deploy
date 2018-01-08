@@ -19,7 +19,7 @@
     },
     "autoload": {
         "classmap": [
-            "classes"
+            "Classes"
         ]
     },
     "autoload-dev": {

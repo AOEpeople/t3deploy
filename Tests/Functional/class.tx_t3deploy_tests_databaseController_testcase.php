@@ -27,7 +27,7 @@ class tx_t3deploy_tests_databaseController_testcase extends FunctionalTestCase
     /**
      * @var array
      */
-    protected $testExtensionsToLoad = ['typo3conf/ext/t3deploy', '../../tests/fixtures/testextension'];
+    protected $testExtensionsToLoad = ['typo3conf/ext/t3deploy', '../../Tests/Fixtures/testextension'];
 
     /**
      * @var tx_t3deploy_databaseController
@@ -202,7 +202,7 @@ class tx_t3deploy_tests_databaseController_testcase extends FunctionalTestCase
      */
     public function doesUpdateStructureActionDumpChangesToFile()
     {
-        $testDumpFile = PATH_tx_t3deploy . 'tests/test_dumpfile.sql';
+        $testDumpFile = PATH_tx_t3deploy . 'Tests/test_dumpfile.sql';
         if (file_exists($testDumpFile)) {
             unlink($testDumpFile);
         }

@@ -45,9 +45,9 @@ script:
   - >
     echo "Running unit tests";
     if [[ "$COVERAGE" == "1" ]]; then
-      .Build/bin/phpunit --coverage-clover=ut-coverage.clover --colors -c tests/phpunit.xml
+      .Build/bin/phpunit --coverage-clover=ut-coverage.clover --colors -c Tests/phpunit.xml
     else
-      .Build/bin/phpunit --colors -c tests/phpunit.xml
+      .Build/bin/phpunit --colors -c Tests/phpunit.xml
     fi
 
   # Execute functional tests, if enabled
@@ -60,9 +60,9 @@ script:
       export typo3DatabasePassword="";
 
       if [[ "$COVERAGE" == "1" ]]; then
-        .Build/bin/phpunit --coverage-clover=ft-coverage.clover --colors -c tests/functional.xml
+        .Build/bin/phpunit --coverage-clover=ft-coverage.clover --colors -c Tests/functional.xml
       else
-        .Build/bin/phpunit -c tests/functional.xml
+        .Build/bin/phpunit -c Tests/functional.xml
       fi
     fi
 
