@@ -1,0 +1,10 @@
+filter:
+  excluded_paths:
+    - 'Tests/*'
+  paths:
+    - 'Classes/*'
+
+tools:
+  external_code_coverage:
+    timeout: 700
+    runs: 1
