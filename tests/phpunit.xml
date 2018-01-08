@@ -15,7 +15,7 @@
         >
     <testsuites>
         <testsuite name="t3deploy">
-            <directory suffix="_testcase.php">../tests/</directory>
+            <directory suffix="_testcase.php">../tests/Unit/</directory>
         </testsuite>
     </testsuites>
     <filter>
