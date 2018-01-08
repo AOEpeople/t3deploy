@@ -2,6 +2,10 @@
 
 TYPO3 dispatcher for database related operations.
 
+
+## Build information
+[![Build Status](https://travis-ci.org/AOEpeople/t3deploy.svg?branch=master)](https://travis-ci.org/AOEpeople/t3deploy)
+
 ## Usage
 
 **Add new database definitions**
@@ -45,5 +49,5 @@ See also the list of [contributors](https://github.com/AOEpeople/t3deploy/contri
 
 ## Copyright / License
 
-Copyright: (c) 2012 - 2016, AOE GmbH
+Copyright: (c) 2012 - 2018, AOE GmbH
 License: GPLv3, <http://www.gnu.org/licenses/gpl-3.0.en.html>
