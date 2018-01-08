@@ -1,0 +1,60 @@
+language: php
+
+php:
+  - 5.5
+  - 5.6
+  - 7.0
+
+env:
+  - TYPO3_VERSION=^7.6 COVERAGE=0 FUNCTIONAL=1
+  - TYPO3_VERSION=^6.2 COVERAGE=0 FUNCTIONAL=1
+
+addons:
+  apt:
+    packages:
+      - parallel
+
+before_install:
+  - composer self-update
+  - composer --version
+
+before_script:
+  # Installs TYPO3
+  - composer require --dev typo3/cms=$TYPO3_VERSION;
+  - export "TYPO3_PATH_WEB"=$PWD/.Build/Web;
+  # Restore composer.json
+  - git checkout composer.json;
+
+script:
+  # Execute unit tests
+  - >
+    echo "Running unit tests";
+    if [[ "$COVERAGE" == "1" ]]; then
+      .Build/bin/phpunit --coverage-clover=ut-coverage.clover --colors -c tests/phpunit.xml
+    else
+      .Build/bin/phpunit --colors -c tests/phpunit.xml
+    fi
+
+  # Execute functional tests, if enabled
+  - >
+    if [[ "$FUNCTIONAL" == "1" ]]; then
+      echo "Running functional tests"
+      export typo3DatabaseHost="localhost";
+      export typo3DatabaseName="typo3";
+      export typo3DatabaseUsername="root";
+      export typo3DatabasePassword="";
+
+      if [[ "$COVERAGE" == "1" ]]; then
+        .Build/bin/phpunit --coverage-clover=ft-coverage.clover --colors -c tests/functional.xml
+      else
+        .Build/bin/phpunit -c tests/functional.xml
+      fi
+    fi
+
+  # Upload code coverage data, if enabled
+  - >
+    if [[ "$COVERAGE" == "1" ]]; then
+      echo "Uploading code coverage results";
+      wget https://scrutinizer-ci.com/ocular.phar
+      find . -wholename '*-coverage.clover' -o -name '*-coverage.clover' | xargs -i php ocular.phar code-coverage:upload --format=php-clover {}
+    fi
