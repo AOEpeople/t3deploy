@@ -5,6 +5,7 @@ TYPO3 dispatcher for database related operations.
 
 ## Build information
 [![Build Status](https://travis-ci.org/AOEpeople/t3deploy.svg?branch=master)](https://travis-ci.org/AOEpeople/t3deploy)
+[![Code Coverage](https://scrutinizer-ci.com/g/AOEpeople/t3deploy/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/AOEpeople/t3deploy/?branch=master)
 
 ## Usage
 

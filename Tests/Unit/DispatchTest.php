@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2016 AOE GmbH <dev@aoe.com>
+*  (c) 2018 AOE GmbH <dev@aoe.com>
 *  All rights reserved
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-use TYPO3\CMS\Core\Tests\UnitTestCase;
+use Nimut\TestingFramework\TestCase\UnitTestCase;
 
 /**
  * Test case for class tx_t3deploy_dispatch.
@@ -16,7 +16,7 @@ use TYPO3\CMS\Core\Tests\UnitTestCase;
  * @package t3deploy
  * @author Oliver Hader <oliver.hader@aoe.com>
  */
-class tx_t3deploy_tests_dispatch_testcase extends UnitTestCase
+class DispatchTest extends UnitTestCase
 {
     const ClassPrefix = 'tx_t3deploy_';
     const ClassSuffix = 'Controller';

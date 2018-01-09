@@ -1,33 +1,56 @@
 language: php
 
 php:
-  - 5.3
   - 5.5
   - 5.6
   - 7.0
   - 7.1
+  - 7.2
 
 env:
-  - TYPO3_VERSION=^7.6 COVERAGE=1 FUNCTIONAL=1
-  - TYPO3_VERSION=^6.2 COVERAGE=1 FUNCTIONAL=1
+  - TYPO3_VERSION=^7.6 COVERAGE=0 FUNCTIONAL=0
+  - TYPO3_VERSION=^8.7 COVERAGE=0 FUNCTIONAL=0
+  - TYPO3_VERSION=dev-master COVERAGE=0 FUNCTIONAL=0
 
 matrix:
   exclude:
-    - env: TYPO3_VERSION=^6.2
-      php: 7.0
-    - env: TYPO3_VERSION=^6.2
-      php: 7.1
-    - env: TYPO3_VERSION=^6.2
+    - env: TYPO3_VERSION=dev-master COVERAGE=0 FUNCTIONAL=0
       php: 5.5
-    - env: TYPO3_VERSION=^6.2
+    - env: TYPO3_VERSION=dev-master COVERAGE=0 FUNCTIONAL=0
       php: 5.6
-    - env: TYPO3_VERSION=^7.6
-      php: 5.3
+    - env: TYPO3_VERSION=^8.7 COVERAGE=0 FUNCTIONAL=0
+      php: 5.5
+    - env: TYPO3_VERSION=^8.7 COVERAGE=0 FUNCTIONAL=0
+      php: 5.6
+  include:
+    - env: TYPO3_VERSION=^7.6 COVERAGE=1 FUNCTIONAL=1
+      php: 7.1
+    - env: TYPO3_VERSION=^8.7 COVERAGE=0 FUNCTIONAL=1
+      php: 7.1
+    - env: TYPO3_VERSION=dev-master COVERAGE=0 FUNCTIONAL=1
+      php: 7.1
+  allow_failures:
+    - env: TYPO3_VERSION=dev-master COVERAGE=0 FUNCTIONAL=1
+    - env: TYPO3_VERSION=dev-master COVERAGE=0 FUNCTIONAL=0
+    - php: 7.2
+
+notifications:
+  email:
+    # recipients:
+    #  - lorem.ipsum@aoe.com
+    on_success: never
+    on_failure: never
+
+sudo: false
 
 addons:
   apt:
     packages:
       - parallel
+
+cache:
+  directories:
+    - $HOME/.composer/cache
 
 before_install:
   - composer self-update
@@ -36,18 +59,22 @@ before_install:
 before_script:
   # Installs TYPO3
   - composer require --dev typo3/cms=$TYPO3_VERSION;
-  - export "TYPO3_PATH_WEB"=$PWD/.Build/Web;
   # Restore composer.json
   - git checkout composer.json;
+  - export "TYPO3_PATH_WEB"=$PWD/.Build/Web;
+  # Locating UnitTests.xml
+  - export "UNIT_XML"='.Build/vendor/nimut/testing-framework/res/Configuration/UnitTests.xml'
+  # Location FunctionalTests.xml
+  - export "FUNCTIONAL_XML"='.Build/vendor/nimut/testing-framework/res/Configuration/FunctionalTests.xml'
 
 script:
   # Execute unit tests
   - >
     echo "Running unit tests";
     if [[ "$COVERAGE" == "1" ]]; then
-      .Build/bin/phpunit --coverage-clover=ut-coverage.clover --colors -c Tests/phpunit.xml
+      .Build/bin/phpunit --whitelist Classes/ --coverage-clover=ut-coverage.clover --colors -c $UNIT_XML Tests/Unit
     else
-      .Build/bin/phpunit --colors -c Tests/phpunit.xml
+      .Build/bin/phpunit --colors -c $UNIT_XML Tests/Unit
     fi
 
   # Execute functional tests, if enabled
@@ -60,9 +87,9 @@ script:
       export typo3DatabasePassword="";
 
       if [[ "$COVERAGE" == "1" ]]; then
-        .Build/bin/phpunit --coverage-clover=ft-coverage.clover --colors -c Tests/functional.xml
+        .Build/bin/phpunit --whitelist Classes/ --coverage-clover=ft-coverage.clover --colors -c $FUNCTIONAL_XML Tests/Functional
       else
-        .Build/bin/phpunit -c Tests/functional.xml
+        .Build/bin/phpunit --colors -c $FUNCTIONAL_XML Tests/Functional
       fi
     fi
 
@@ -73,3 +100,7 @@ script:
       wget https://scrutinizer-ci.com/ocular.phar
       find . -wholename '*-coverage.clover' -o -name '*-coverage.clover' | xargs -i php ocular.phar code-coverage:upload --format=php-clover {}
     fi
+
+  - >
+    echo "Running php lint";
+    find . -name \*.php ! -path "./.Build/*" | parallel --gnu php -d display_errors=stderr -l {} > /dev/null \;

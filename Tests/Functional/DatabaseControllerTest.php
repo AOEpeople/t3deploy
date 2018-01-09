@@ -2,13 +2,13 @@
 /***************************************************************
 *  Copyright notice
 *
-*  (c) 2016 AOE GmbH <dev@aoe.com>
+*  (c) 2018 AOE GmbH <dev@aoe.com>
 *  All rights reserved
 *
 *  This copyright notice MUST APPEAR in all copies of the script!
 ***************************************************************/
 
-use TYPO3\CMS\Core\Tests\FunctionalTestCase;
+use Nimut\TestingFramework\TestCase\FunctionalTestCase;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
 
 /**
@@ -17,7 +17,7 @@ use TYPO3\CMS\Core\Utility\GeneralUtility;
  * @package t3deploy
  * @author Oliver Hader <oliver.hader@aoe.com>
  */
-class tx_t3deploy_tests_databaseController_testcase extends FunctionalTestCase
+class DatabaseControllerTest extends FunctionalTestCase
 {
     /**
      * @var array
@@ -49,7 +49,7 @@ class tx_t3deploy_tests_databaseController_testcase extends FunctionalTestCase
         );
 
         $expectedSchemaServiceMock->expects($this->any())->method('getTablesDefinitionString')->with(true)->willReturn(
-            file_get_contents(PATH_tx_t3deploy . 'tests/fixtures/testextension/ext_tables_fixture.sql')
+            file_get_contents(PATH_tx_t3deploy . 'Tests/Fixtures/testextension/ext_tables_fixture.sql')
         );
 
         $this->controller = new tx_t3deploy_databaseController();
