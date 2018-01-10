@@ -2,7 +2,6 @@
     "name": "aoe/t3deploy-ext",
     "description": "t3deploy TYPO3 dispatcher",
     "type": "typo3-cms-extension",
-    "version": "1.1.1",
     "license": "GPL-3.0",
     "authors": [
         {
@@ -10,15 +9,49 @@
             "email": "dev@aoe.com"
         }
     ],
+    "require": {
+        "typo3/cms-core": ">=7.6.0,<8.7.99"
+    },
     "require-dev": {
-        "typo3/cms": "~8.0"
+        "typo3/cms": "^7.6",
+        "nimut/testing-framework": "^2.0.0"
     },
     "replace": {
         "t3deploy": "*"
     },
     "autoload": {
         "classmap": [
-            "classes"
+            "Classes"
+        ]
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "TYPO3\\CMS\\Core\\Tests\\": ".Build/Web/typo3/sysext/core/Tests/"
+        }
+    },
+    "config": {
+        "vendor-dir": ".Build/vendor",
+        "bin-dir": ".Build/bin",
+        "preferred-install": {
+            "typo3/cms": "source"
+        }
+    },
+    "extra": {
+        "typo3/cms": {
+            "cms-package-dir": "{$vendor-dir}/typo3/cms",
+            "web-dir": ".Build/Web"
+        }
+    },
+    "repositories": [
+        {
+            "type": "composer",
+            "url": "https://composer.typo3.org/"
+        }
+    ],
+    "scripts": {
+        "post-autoload-dump": [
+            "mkdir -p .Build/Web/typo3conf/ext/",
+            "[ -L .Build/Web/typo3conf/ext/t3deploy ] || ln -snvf ../../../../. .Build/Web/typo3conf/ext/t3deploy"
         ]
     },
     "keywords": [

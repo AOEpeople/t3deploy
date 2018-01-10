@@ -1,7 +1,7 @@
 <phpunit
         backupGlobals="true"
         backupStaticAttributes="false"
-        colors="false"
+        colors="true"
         convertErrorsToExceptions="true"
         convertNoticesToExceptions="true"
         convertWarningsToExceptions="true"
@@ -15,12 +15,12 @@
         >
     <testsuites>
         <testsuite name="t3deploy">
-            <directory suffix="_testcase.php">../tests/</directory>
+            <directory suffix="_testcase.php">../Tests/Unit/</directory>
         </testsuite>
     </testsuites>
     <filter>
         <whitelist>
-            <directory suffix=".php">../classes</directory>
+            <directory suffix=".php">../Classes</directory>
         </whitelist>
     </filter>
 </phpunit>
