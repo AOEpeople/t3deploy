@@ -19,7 +19,7 @@ use \TYPO3\CMS\Core\Utility\GeneralUtility;
 class tx_t3deploy_dispatch extends \TYPO3\CMS\Core\Controller\CommandLineController {
 	const ExtKey = 't3deploy';
 	const Mask_ClassName = 'tx_t3deploy_%sController';
-	const Mask_ClassFile = 'classes/class.tx_t3deploy_%sController.php';
+	const Mask_ClassFile = 'Classes/class.tx_t3deploy_%sController.php';
 	const Mask_Action = '%sAction';
 
 	/**
