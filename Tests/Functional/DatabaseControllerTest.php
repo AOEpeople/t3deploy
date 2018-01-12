@@ -53,7 +53,7 @@ class DatabaseControllerTest extends FunctionalTestCase
             file_get_contents(PATH_tx_t3deploy . 'Tests/Fixtures/testextension/ext_tables_fixture.sql')
         );
 
-        $this->controller = new tx_t3deploy_databaseController();
+        $this->controller = new \tx_t3deploy_databaseController();
         $this->inject($this->controller, 'expectedSchemaService', $expectedSchemaServiceMock);
     }
 
