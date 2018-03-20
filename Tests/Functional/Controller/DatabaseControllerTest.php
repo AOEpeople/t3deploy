@@ -1,21 +1,40 @@
 <?php
-/***************************************************************
-*  Copyright notice
-*
-*  (c) 2018 AOE GmbH <dev@aoe.com>
-*  All rights reserved
-*
-*  This copyright notice MUST APPEAR in all copies of the script!
-***************************************************************/
+namespace Aoe\T3deploy\Tests\Functional;
 
+/***************************************************************
+ *  Copyright notice
+ *
+ *  (c) 2018 AOE GmbH <dev@aoe.com>
+ *
+ *  All rights reserved
+ *
+ *  This script is part of the TYPO3 project. The TYPO3 project is
+ *  free software; you can redistribute it and/or modify
+ *  it under the terms of the GNU General Public License as published by
+ *  the Free Software Foundation; either version 3 of the License, or
+ *  (at your option) any later version.
+ *
+ *  The GNU General Public License can be found at
+ *  http://www.gnu.org/copyleft/gpl.html.
+ *
+ *  This script is distributed in the hope that it will be useful,
+ *  but WITHOUT ANY WARRANTY; without even the implied warranty of
+ *  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ *  GNU General Public License for more details.
+ *
+ *  This copyright notice MUST APPEAR in all copies of the script!
+ ***************************************************************/
+
+use Aoe\T3deploy\Controller\DatabaseController;
 use Nimut\TestingFramework\TestCase\FunctionalTestCase;
+use TYPO3\CMS\Core\Utility\ExtensionManagementUtility;
 use TYPO3\CMS\Core\Utility\GeneralUtility;
+use TYPO3\CMS\Install\Service\SqlExpectedSchemaService;
 
 /**
  * Test case for class tx_t3deploy_databaseController.
  *
  * @package t3deploy
- * @author Oliver Hader <oliver.hader@aoe.com>
  */
 class DatabaseControllerTest extends FunctionalTestCase
 {
@@ -30,7 +49,7 @@ class DatabaseControllerTest extends FunctionalTestCase
     protected $testExtensionsToLoad = ['typo3conf/ext/t3deploy', '../../Tests/Fixtures/testextension'];
 
     /**
-     * @var tx_t3deploy_databaseController
+     * @var DatabaseController
      */
     private $controller;
 
@@ -43,16 +62,13 @@ class DatabaseControllerTest extends FunctionalTestCase
     {
         parent::setUp();
 
-        $expectedSchemaServiceMock = $this->getMock(
-            'TYPO3\\CMS\\Install\\Service\\SqlExpectedSchemaService',
-            ['getTablesDefinitionString']
-        );
+        $expectedSchemaServiceMock = $this->getMock(SqlExpectedSchemaService::class, ['getTablesDefinitionString']);
 
         $expectedSchemaServiceMock->expects($this->any())->method('getTablesDefinitionString')->with(true)->willReturn(
-            file_get_contents(PATH_tx_t3deploy . 'Tests/Fixtures/testextension/ext_tables_fixture.sql')
+            file_get_contents(ExtensionManagementUtility::extPath('t3deploy') . 'Tests/Fixtures/testextension/ext_tables_fixture.sql')
         );
 
-        $this->controller = new tx_t3deploy_databaseController();
+        $this->controller = new DatabaseController();
         $this->inject($this->controller, 'expectedSchemaService', $expectedSchemaServiceMock);
     }
 
@@ -202,7 +218,7 @@ class DatabaseControllerTest extends FunctionalTestCase
      */
     public function doesUpdateStructureActionDumpChangesToFile()
     {
-        $testDumpFile = PATH_tx_t3deploy . 'Tests/test_dumpfile.sql';
+        $testDumpFile = ExtensionManagementUtility::extPath('t3deploy') . 'Tests/test_dumpfile.sql';
         if (file_exists($testDumpFile)) {
             unlink($testDumpFile);
         }
