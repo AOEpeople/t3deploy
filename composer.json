@@ -17,6 +17,9 @@
         "t3deploy": "*"
     },
     "autoload": {
+        "psr-4": {
+            "AOE\\T3Deploy\\": "Classes"
+        },
         "classmap": [
             "Classes"
         ]
